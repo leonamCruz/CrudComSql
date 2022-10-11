@@ -2,6 +2,7 @@ package br.com.crud.view;
 
 import br.com.crud.dao.FornecedorDao;
 import br.com.crud.model.Fornecedor;
+import br.com.crud.services.impl.FornecedorServiceImpl;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -34,8 +35,8 @@ public class FormularioFornecedor {
     private JTextField txtPesquisaPorNome;
     private JTable showTable;
     private JPanel root;
-    FornecedorDao fornecedorDao = new FornecedorDao();
-    Fornecedor obj = new Fornecedor();
+    private Fornecedor fornecedor = new Fornecedor();
+    private FornecedorServiceImpl service = new FornecedorServiceImpl();
 
     public FormularioFornecedor() {
         tabbedPane1.addComponentListener(new ComponentAdapter() {
@@ -59,50 +60,49 @@ public class FormularioFornecedor {
                     txtNumero.setText("0");
 
                     opcEstado.setSelectedItem("PA");
-                } catch (ParseException ex) {
-                    throw new RuntimeException(ex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-
             }
         });
         cadastrarButton.addActionListener(e -> {
             int opc = JOptionPane.showConfirmDialog(null, "Deseja realmente cadastrar?", "Você irá cadastrar este cidadão", JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (opc == 0) {
-                obj.setNome(txtNome.getText());
-                obj.setCpnj(txtCnpj.getText());
-                obj.setEmail(txtEmail.getText());
-                obj.setTelefone(txtFixo.getText());
-                obj.setCelular(txtCelular.getText());
-                obj.setCep(txtCep.getText());
-                obj.setEndereco(txtEndereco.getText());
-                obj.setNumero(Integer.parseInt(txtNumero.getText()));
-                obj.setComplemento(txtComplemento.getText());
-                obj.setBairro(txtBairro.getText());
-                obj.setCidade(txtCidade.getText());
-                obj.setEstado(Objects.requireNonNull(opcEstado.getSelectedItem()).toString());
-                if (obj.getNumero() < 0) {
+                fornecedor.setNome(txtNome.getText());
+                fornecedor.setCpnj(txtCnpj.getText());
+                fornecedor.setEmail(txtEmail.getText());
+                fornecedor.setTelefone(txtFixo.getText());
+                fornecedor.setCelular(txtCelular.getText());
+                fornecedor.setCep(txtCep.getText());
+                fornecedor.setEndereco(txtEndereco.getText());
+                fornecedor.setNumero(Integer.parseInt(txtNumero.getText()));
+                fornecedor.setComplemento(txtComplemento.getText());
+                fornecedor.setBairro(txtBairro.getText());
+                fornecedor.setCidade(txtCidade.getText());
+                fornecedor.setEstado(Objects.requireNonNull(opcEstado.getSelectedItem()).toString());
+                if (fornecedor.getNumero() < 0) {
                     JOptionPane.showMessageDialog(null, "Número Negativo...", "Isso é absurdo", JOptionPane.ERROR_MESSAGE);
 
-                } else if (obj.getNome().length() < 4) {
+                } else if (fornecedor.getNome().length() < 4) {
                     JOptionPane.showMessageDialog(null, "Nome muito pequeno", "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    fornecedorDao.cadastrarFornecedores(obj);
+                    service.cadastrarFornecedores(fornecedor);
                 }
             }
         });
         excluirButton.addActionListener(e -> {
             int opc = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Você irá excluir este cidadão", JOptionPane.YES_NO_CANCEL_OPTION);
             if (opc == 0) {
-                obj.setId(Integer.parseInt(txtId.getText()));
-                fornecedorDao.excluirFornecedor(obj);
+                fornecedor.setId(Integer.parseInt(txtId.getText()));
+                service.excluirFornecedor(fornecedor);
             }
         });
         alterarButton.addActionListener(e -> {
             int opc = JOptionPane.showConfirmDialog(null, "Deseja realmente alterar?", "Você irá alterar esse cidadão!", JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (opc == 0) {
-                fornecedorDao.alterarFornecedor(obj);
+                service.alterarFornecedor(fornecedor);
                 MainUiFornecedor();
             }
         });
@@ -120,47 +120,22 @@ public class FormularioFornecedor {
             }
         });
         limparButton.addActionListener(e -> {
+            fornecedor = new Fornecedor();
             txtId.setText("");
-            obj.setId(-1); //Coloquei pra poder limpar os dados que ficam salvos na Ram.
-
             txtNome.setText("");
-            obj.setNome("");
-
             txtCnpj.setText("");
-            obj.setCpnj("");
-
             txtEmail.setText("");
-            obj.setEmail("");
-
             txtFixo.setText("");
-            obj.setTelefone("");
-
             txtCelular.setText("");
-            obj.setCelular("");
-
             txtCep.setText("");
-            obj.setCep("");
-
             txtEndereco.setText("");
-            obj.setEndereco("");
-
             txtNumero.setText("0");
-            obj.setNumero(0);
-
             txtComplemento.setText("");
-            obj.setComplemento("");
-
             txtBairro.setText("");
-            obj.setBairro("");
-
             txtCidade.setText("");
-            obj.setBairro("");
-
             opcEstado.setSelectedItem("PA");
-            obj.setEstado("");
-        }
-    );
-}
+        });
+    }
 
     public JPanel getRoot() {
         return root;
@@ -172,19 +147,7 @@ public class FormularioFornecedor {
 
     private void createTable() {
         Object[][] data = {{}};
-        showTable.setModel(new DefaultTableModel(data, new String[]{"ID",
-                "Nome",
-                "Cnpj",
-                "Email",
-                "Telefone",
-                "Celular",
-                "Cep",
-                "Endereço",
-                "Numero",
-                "Complemento",
-                "Bairro",
-                "Cidade",
-                "Estado"}));
+        showTable.setModel(new DefaultTableModel(data, new String[]{"ID", "Nome", "Cnpj", "Email", "Telefone", "Celular", "Cep", "Endereço", "Numero", "Complemento", "Bairro", "Cidade", "Estado"}));
     }
 
     public void MainUiFornecedor() {
@@ -192,43 +155,19 @@ public class FormularioFornecedor {
     }
 
     public void listarFornecedores() {
-        List<Fornecedor> lista = fornecedorDao.listarFornecedores();
+        List<Fornecedor> lista = service.listarFornecedor();
         DefaultTableModel dados = (DefaultTableModel) showTable.getModel();
         dados.setRowCount(0);
-        for (Fornecedor f : lista)
-            dados.addRow(new Object[]{f.getId(),
-                    f.getNome(),
-                    f.getCpnj(),
-                    f.getEmail(),
-                    f.getTelefone(),
-                    f.getCelular(),
-                    f.getCep(),
-                    f.getEndereco(),
-                    f.getNumero(),
-                    f.getComplemento(),
-                    f.getBairro(),
-                    f.getCidade(),
-                    f.getEstado()});
+        for (Fornecedor fornecedor : lista)
+            dados.addRow(new Object[]{fornecedor.getId(), fornecedor.getNome(), fornecedor.getCpnj(), fornecedor.getEmail(), fornecedor.getTelefone(), fornecedor.getCelular(), fornecedor.getCep(), fornecedor.getEndereco(), fornecedor.getNumero(), fornecedor.getComplemento(), fornecedor.getBairro(), fornecedor.getCidade(), fornecedor.getEstado()});
     }
 
     public void listarPesquisaNomeFornecedores(String nome) {
-        List<Fornecedor> lista = fornecedorDao.filtrarPorNomesFornecedores(nome);
+        List<Fornecedor> lista = service.filtrarPorNomesFornecedores(nome);
         DefaultTableModel dados = (DefaultTableModel) showTable.getModel();
         dados.setRowCount(0);
-        for (Fornecedor f : lista)
-            dados.addRow(new Object[]{f.getId(),
-                    f.getNome(),
-                    f.getCpnj(),
-                    f.getEmail(),
-                    f.getTelefone(),
-                    f.getCelular(),
-                    f.getCep(),
-                    f.getEndereco(),
-                    f.getNumero(),
-                    f.getComplemento(),
-                    f.getBairro(),
-                    f.getCidade(),
-                    f.getEstado()});
+        for (Fornecedor fornecedor : lista)
+            dados.addRow(new Object[]{fornecedor.getId(), fornecedor.getNome(), fornecedor.getCpnj(), fornecedor.getEmail(), fornecedor.getTelefone(), fornecedor.getCelular(), fornecedor.getCep(), fornecedor.getEndereco(), fornecedor.getNumero(), fornecedor.getComplemento(), fornecedor.getBairro(), fornecedor.getCidade(), fornecedor.getEstado()});
     }
 
     public void pegaDadosfornecedor() {

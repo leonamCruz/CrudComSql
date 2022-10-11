@@ -35,7 +35,7 @@ public class FormularioProduto {
             @Override
             public void ancestorAdded(AncestorEvent event) {
                 FornecedorDao fornecedorDao = new FornecedorDao();
-                List<Fornecedor> listaDeFornecedores =  fornecedorDao.listarFornecedores();
+                List<Fornecedor> listaDeFornecedores =  fornecedorDao.listarFornecedor();
                 opcFornecedor.removeAll();
                 for(Fornecedor f : listaDeFornecedores){
                     opcFornecedor.addItem(f);
@@ -89,7 +89,7 @@ public class FormularioProduto {
                 super.componentResized(e);
                 listarProdutos();
                 FornecedorDao fornecedorDao = new FornecedorDao();
-                List<Fornecedor> listaDeFornecedores = fornecedorDao.listarFornecedores();
+                List<Fornecedor> listaDeFornecedores = fornecedorDao.listarFornecedor();
                 opcFornecedor.removeAllItems();
                 for (Fornecedor f : listaDeFornecedores){
                     opcFornecedor.addItem(f);

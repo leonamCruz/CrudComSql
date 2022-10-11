@@ -3,169 +3,136 @@ package br.com.crud.dao;
 import br.com.crud.jdbc.ConnectFactory;
 import br.com.crud.model.Fornecedor;
 
-import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FornecedorDao {
-    private Connection con;
+    public static final String CADASTRA_FORNECEDOR = "insert into tb_fornecedores (nome,cnpj,email,telefone,celular,cep,endereco,numero,complemento,bairro,cidade,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+    public static final String LISTAR_FORNECEDOR = "select * from tb_fornecedores";
+    public static final String DELETAR_FORNECEDOR = "delete from tb_fornecedores where id = ";
+    public static final String FILTRAR_FORNECEDOR_NOME = "select * from tb_fornecedores where nome like ?";
+    public static final String ALTERAR_FORNECEDOR = "update tb_fornecedores set nome = ?,\" +\n" +
+            "                    \"cnpj = ?,email = ?,telefone = ?,celular = ?,cep = ?,endereco = ?\" +\n" +
+            "                    \",numero = ?,complemento = ?,bairro = ?,cidade = ?,estado = ? where id = ?";
 
-    public void FornecedoresDao() {
-        this.con = new ConnectFactory().getConnection();
-    }
-
-    public void cadastrarFornecedores(Fornecedor obj) {
-        try {
-            FornecedoresDao();
-            String sql = "insert into tb_fornecedores (nome,cnpj,email,telefone,celular,cep,endereco,numero," +
-                    "complemento,bairro,cidade,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
-
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            stmt.setString(1, obj.getNome());
-            stmt.setString(2, obj.getCpnj());
-            stmt.setString(3, obj.getEmail());
-            stmt.setString(4, obj.getTelefone());
-            stmt.setString(5, obj.getCelular());
-            stmt.setString(6, obj.getCep());
-            stmt.setString(7, obj.getEndereco());
-            stmt.setInt(8, obj.getNumero());
-            stmt.setString(9, obj.getComplemento());
-            stmt.setString(10, obj.getBairro());
-            stmt.setString(11, obj.getCidade());
-            stmt.setString(12, obj.getEstado());
+    public void cadastrarFornecedores(Fornecedor fornecedor) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(CADASTRA_FORNECEDOR)) {
+            stmt.setString(1, fornecedor.getNome());
+            stmt.setString(2, fornecedor.getCpnj());
+            stmt.setString(3, fornecedor.getEmail());
+            stmt.setString(4, fornecedor.getTelefone());
+            stmt.setString(5, fornecedor.getCelular());
+            stmt.setString(6, fornecedor.getCep());
+            stmt.setString(7, fornecedor.getEndereco());
+            stmt.setInt(8, fornecedor.getNumero());
+            stmt.setString(9, fornecedor.getComplemento());
+            stmt.setString(10, fornecedor.getBairro());
+            stmt.setString(11, fornecedor.getCidade());
+            stmt.setString(12, fornecedor.getEstado());
 
             stmt.execute();
-            stmt.close();
-            JOptionPane.showMessageDialog(null, "Cadastrado com Sucesso",
-                    "Sucesso total", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException erro) {
-            System.out.println("erro" + erro);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public List<Fornecedor> listarFornecedores() {
-        try {
-            List<Fornecedor> lista = new ArrayList<>();
-            FornecedoresDao();
-            String sql = "select * from tb_fornecedores";
-            PreparedStatement stmt = con.prepareStatement(sql);
+    public List<Fornecedor> listarFornecedor() {
+        List<Fornecedor> lista = new ArrayList<>();
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(LISTAR_FORNECEDOR)) {
+
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Fornecedor obj = new Fornecedor();
+                Fornecedor fornecedor = new Fornecedor();
 
-                obj.setId(rs.getInt("id"));
-                obj.setNome(rs.getString("nome"));
-                obj.setCpnj(rs.getString("cnpj"));
-                obj.setEmail(rs.getString("email"));
-                obj.setTelefone(rs.getString("telefone"));
-                obj.setCelular(rs.getString("celular"));
-                obj.setCep(rs.getString("cep"));
-                obj.setEndereco(rs.getString("endereco"));
-                obj.setNumero(rs.getInt("numero"));
-                obj.setComplemento(rs.getString("complemento"));
-                obj.setBairro(rs.getString("bairro"));
-                obj.setCidade(rs.getString("cidade"));
-                obj.setEstado(rs.getString("estado"));
+                fornecedor.setId(rs.getInt("id"));
+                fornecedor.setNome(rs.getString("nome"));
+                fornecedor.setCpnj(rs.getString("cnpj"));
+                fornecedor.setEmail(rs.getString("email"));
+                fornecedor.setTelefone(rs.getString("telefone"));
+                fornecedor.setCelular(rs.getString("celular"));
+                fornecedor.setCep(rs.getString("cep"));
+                fornecedor.setEndereco(rs.getString("endereco"));
+                fornecedor.setNumero(rs.getInt("numero"));
+                fornecedor.setComplemento(rs.getString("complemento"));
+                fornecedor.setBairro(rs.getString("bairro"));
+                fornecedor.setCidade(rs.getString("cidade"));
+                fornecedor.setEstado(rs.getString("estado"));
 
-                lista.add(obj);
+                lista.add(fornecedor);
             }
             return lista;
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Deu erro",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public void excluirFornecedor(Fornecedor obj) {
-        try {
-            FornecedoresDao();
-            String sql = "delete from tb_fornecedores where id = ?";
-
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, obj.getId());
+    public void excluirFornecedor(Fornecedor fornecedor) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(DELETAR_FORNECEDOR)) {
+            stmt.setInt(1, fornecedor.getId());
 
             stmt.execute();
-            stmt.close();
-            JOptionPane.showMessageDialog(null,
-                    "Excluido com Sucesso", "Sucesso total", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException erro) {
-            System.out.println("erro" + erro);
+        } catch (Exception erro) {
+            erro.printStackTrace();
         }
     }
 
-    public void alterarFornecedor(Fornecedor obj) {
-        try {
-            FornecedoresDao();
-            String sql = "update tb_fornecedores set nome = ?," +
-                    "cnpj = ?,email = ?,telefone = ?,celular = ?,cep = ?,endereco = ?" +
-                    ",numero = ?,complemento = ?,bairro = ?,cidade = ?,estado = ? where id = ?";
+    public void alterarFornecedor(Fornecedor fornecedor) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(ALTERAR_FORNECEDOR)) {
 
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            stmt.setString(1, obj.getNome());
-            stmt.setString(2, obj.getCpnj());
-            stmt.setString(3, obj.getEmail());
-            stmt.setString(4, obj.getTelefone());
-            stmt.setString(5, obj.getCelular());
-            stmt.setString(6, obj.getCep());
-            stmt.setString(7, obj.getEndereco());
-            stmt.setInt(8, obj.getNumero());
-            stmt.setString(9, obj.getComplemento());
-            stmt.setString(10, obj.getBairro());
-            stmt.setString(11, obj.getCidade());
-            stmt.setString(12, obj.getEstado());
-            stmt.setInt(13, obj.getId());
+            stmt.setString(1, fornecedor.getNome());
+            stmt.setString(2, fornecedor.getCpnj());
+            stmt.setString(3, fornecedor.getEmail());
+            stmt.setString(4, fornecedor.getTelefone());
+            stmt.setString(5, fornecedor.getCelular());
+            stmt.setString(6, fornecedor.getCep());
+            stmt.setString(7, fornecedor.getEndereco());
+            stmt.setInt(8, fornecedor.getNumero());
+            stmt.setString(9, fornecedor.getComplemento());
+            stmt.setString(10, fornecedor.getBairro());
+            stmt.setString(11, fornecedor.getCidade());
+            stmt.setString(12, fornecedor.getEstado());
+            stmt.setInt(13, fornecedor.getId());
 
             stmt.execute();
-            stmt.close();
-            JOptionPane.showMessageDialog(null,
-                    "Alterado com Sucesso", "Sucesso total", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException erro) {
-            System.out.println("erro" + erro);
+        } catch (Exception erro) {
+            erro.printStackTrace();
         }
     }
 
     public List<Fornecedor> filtrarPorNomesFornecedores(String nome) {
-        try {
-            List<Fornecedor> lista = new ArrayList<>();
-            FornecedoresDao();
-            String sql = "select * from tb_fornecedores where nome like ?";
-            PreparedStatement stmt = con.prepareStatement(sql);
+        List<Fornecedor> lista = new ArrayList<>();
+        try(var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(FILTRAR_FORNECEDOR_NOME)) {
             stmt.setString(1, nome);
 
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Fornecedor obj = new Fornecedor();
+                Fornecedor fornecedor = new Fornecedor();
 
-                obj.setId(rs.getInt("id"));
-                obj.setNome(rs.getString("nome"));
-                obj.setCpnj(rs.getString("cnpj"));
-                obj.setEmail(rs.getString("email"));
-                obj.setTelefone(rs.getString("telefone"));
-                obj.setCelular(rs.getString("celular"));
-                obj.setCep(rs.getString("cep"));
-                obj.setEndereco(rs.getString("endereco"));
-                obj.setNumero(rs.getInt("numero"));
-                obj.setComplemento(rs.getString("complemento"));
-                obj.setBairro(rs.getString("bairro"));
-                obj.setCidade(rs.getString("cidade"));
-                obj.setEstado(rs.getString("estado"));
+                fornecedor.setId(rs.getInt("id"));
+                fornecedor.setNome(rs.getString("nome"));
+                fornecedor.setCpnj(rs.getString("cnpj"));
+                fornecedor.setEmail(rs.getString("email"));
+                fornecedor.setTelefone(rs.getString("telefone"));
+                fornecedor.setCelular(rs.getString("celular"));
+                fornecedor.setCep(rs.getString("cep"));
+                fornecedor.setEndereco(rs.getString("endereco"));
+                fornecedor.setNumero(rs.getInt("numero"));
+                fornecedor.setComplemento(rs.getString("complemento"));
+                fornecedor.setBairro(rs.getString("bairro"));
+                fornecedor.setCidade(rs.getString("cidade"));
+                fornecedor.setEstado(rs.getString("estado"));
 
-                lista.add(obj);
+                lista.add(fornecedor);
             }
             return lista;
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Deu erro",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 }

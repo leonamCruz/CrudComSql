@@ -52,7 +52,7 @@ public class FormularioCliente {
     private Cliente cliente = new Cliente();
     private ClienteService service = new ClienteServiceImpl();
 
-    public void listar() {
+    private void listar() {
         List<Cliente> lista = service.listarClientes();
         DefaultTableModel dados = (DefaultTableModel) showTable.getModel();
         dados.setRowCount(0);
@@ -74,7 +74,8 @@ public class FormularioCliente {
                     c.getEstado()
             });
     }
-    public void listarPesquisaNome(String nome) {
+
+    private void listarPesquisaNome(String nome) {
         List<Cliente> lista = service.filtrarPorNomes(nome);
         DefaultTableModel dados = (DefaultTableModel) showTable.getModel();
         dados.setRowCount(0);
@@ -96,7 +97,8 @@ public class FormularioCliente {
                     c.getEstado()
             });
     }
-    public void pegaDados() {
+
+    private void pegaDados() {
         abas.setSelectedIndex(1);
         int linhaSelecionada = showTable.getSelectedRow();
         txtId.setText(showTable.getValueAt(linhaSelecionada, 0).toString());
@@ -140,8 +142,8 @@ public class FormularioCliente {
                             "Isso é absurdo", JOptionPane.ERROR_MESSAGE);
 
                 } else if (cliente.getNome().length() < 4) {
-                    JOptionPane.showMessageDialog(null,"Nome muito pequeno",
-                            "Pequeno de mais",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Nome muito pequeno",
+                            "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
                     service.cadastrarCliente(cliente);
                 }
@@ -189,8 +191,8 @@ public class FormularioCliente {
                             "Isso é absurdo", JOptionPane.ERROR_MESSAGE);
 
                 } else if (cliente.getNome().length() < 4) {
-                    JOptionPane.showMessageDialog(null,"Nome muito pequeno",
-                            "Pequeno de mais",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Nome muito pequeno",
+                            "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
                     service.alterarClientes(cliente);
                 }
@@ -243,26 +245,28 @@ public class FormularioCliente {
     public void MainUI() {
         createTable();
     }
- public void mascaraCliente() {
-     try {
-         MaskFormatter maskRg = new MaskFormatter("######-#");
-         maskRg.install(txtRg);
 
-         MaskFormatter maskCpf = new MaskFormatter("###.###.###-##");
-         maskCpf.install(txtCpf);
+    private void mascaraCliente() {
+        try {
+            MaskFormatter maskRg = new MaskFormatter("######-#");
+            maskRg.install(txtRg);
 
-         MaskFormatter maskTelefone = new MaskFormatter("####-####");
-         maskTelefone.install(txtFixo);
+            MaskFormatter maskCpf = new MaskFormatter("###.###.###-##");
+            maskCpf.install(txtCpf);
 
-         MaskFormatter maskCelular = new MaskFormatter("(##) # ####-####");
-         maskCelular.install(txtCelular);
+            MaskFormatter maskTelefone = new MaskFormatter("####-####");
+            maskTelefone.install(txtFixo);
 
-         MaskFormatter maskCep = new MaskFormatter("#####-###");
-         maskCep.install(txtCep);
-     }catch (Exception e){
-         System.out.println(e);
-     }
- }
+            MaskFormatter maskCelular = new MaskFormatter("(##) # ####-####");
+            maskCelular.install(txtCelular);
+
+            MaskFormatter maskCep = new MaskFormatter("#####-###");
+            maskCep.install(txtCep);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public JPanel getRoot() {
         return root;
     }
@@ -287,6 +291,7 @@ public class FormularioCliente {
                 "Cidade",
                 "Estado"}));
     }
+
     public void selecionaTela(byte opc) {
         abas.setSelectedIndex(opc);
     }

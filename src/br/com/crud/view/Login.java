@@ -27,14 +27,16 @@ public class Login {
         });
     }
 
-    private void logar(){
+    private boolean logar(){
         boolean isLogged = loginService.logar(login.getText(),senha.getText());
         if(isLogged){
             JOptionPane.showMessageDialog(null,"Sucesso");
             RodaTela.userLogado = loginService.getNomeDoLogado();
             RodaTela.createGuiMenuPrincipal();
+            return true;
         }else {
             JOptionPane.showMessageDialog(null,"Falhou");
+            return false;
         }
     }
     public JPanel getRoot() {
