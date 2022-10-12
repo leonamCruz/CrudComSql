@@ -1,35 +1,32 @@
 package br.com.crud.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import br.com.crud.jdbc.ConnectFactory;
 import br.com.crud.model.Cliente;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClienteDao {
-  
-	private static final String SELECT_ALL = "select * from tb_clientes";
+
+    private static final String SELECT_ALL = "select * from tb_clientes";
     private static final String SELECT_POR_NOME = "select * from tb_clientes where nome like ?";
     private static final String SELECT_POR_CPF = "select * from tb_clientes where cpf like ?";
-	private static final String DELETE_POR_ID = "delete from tb_clientes where id = ?";
-	private static final String INSERT_CLIENTE = "insert into tb_clientes (nome,rg,cpf,email,telefone,celular,cep,endereco,numero," +
-			"complemento,bairro,cidade,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String UPDATE_CLIENTE = "update tb_clientes set nome = ?,rg = ?," +
-			"cpf = ?,email = ?,telefone = ?,celular = ?,cep = ?,endereco = ?" +
-			",numero = ?,complemento = ?,bairro = ?,cidade = ?,estado = ? where id = ?";
+    private static final String DELETE_POR_ID = "delete from tb_clientes where id = ?";
+    private static final String INSERT_CLIENTE = "insert into tb_clientes (nome,rg,cpf,email,telefone,celular,cep,endereco,numero," +
+            "complemento,bairro,cidade,estado) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String UPDATE_CLIENTE = "update tb_clientes set nome = ?,rg = ?," +
+            "cpf = ?,email = ?,telefone = ?,celular = ?,cep = ?,endereco = ?" +
+            ",numero = ?,complemento = ?,bairro = ?,cidade = ?,estado = ? where id = ?";
 
-	public Cliente filtrarPorCpf(String cpf) {
-    	
-        try(var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(SELECT_POR_CPF);) {
-            stmt.setString(1,cpf);
+    public Cliente filtrarPorCpf(String cpf) {
+
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(SELECT_POR_CPF);) {
+            stmt.setString(1, cpf);
 
             var rs = stmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 var cliente = new Cliente();
 
                 cliente.setId(rs.getInt("id"));
@@ -48,17 +45,15 @@ public class ClienteDao {
                 cliente.setEstado(rs.getString("estado"));
                 return cliente;
             }
-        }
-        catch (SQLException e) {
-        	e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Deu erro", "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     public void cadastrarCliente(Cliente cliente) {
-        try (var conn = ConnectFactory.getConnection();var stmt = conn.prepareStatement(INSERT_CLIENTE);){
-        	
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(INSERT_CLIENTE);) {
+
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getRg());
             stmt.setString(3, cliente.getCpf());
@@ -74,16 +69,13 @@ public class ClienteDao {
             stmt.setString(13, cliente.getEstado());
 
             stmt.execute();
-
-            JOptionPane.showMessageDialog(null, "Cadastrado com Sucesso", "Sucesso total", JOptionPane.INFORMATION_MESSAGE);
-        }
-        catch (SQLException erro) {
-        	erro.printStackTrace();
+        } catch (Exception erro) {
+            erro.printStackTrace();
         }
     }
 
     public List<Cliente> listarClientes() {
-        try (var conn = ConnectFactory.getConnection();var stmt = conn.prepareStatement(SELECT_ALL);){
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(SELECT_ALL);) {
             var lista = new ArrayList<Cliente>();
             var rs = stmt.executeQuery();
 
@@ -108,30 +100,24 @@ public class ClienteDao {
                 lista.add(cliente);
             }
             return lista;
-        }
-        catch (SQLException e) {
-        	e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Deu erro",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
 
     public void excluirClientes(Cliente cliente) {
-        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(DELETE_POR_ID);){
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(DELETE_POR_ID);) {
             stmt.setInt(1, cliente.getId());
             stmt.execute();
-            JOptionPane.showMessageDialog(null, "Excluido com Sucesso", "Sucesso total",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-        catch (SQLException erro) {
-        	erro.printStackTrace();
+        } catch (Exception erro) {
+            erro.printStackTrace();
         }
     }
 
     public void alterarClientes(Cliente cliente) {
-    	
-        try (var conn = ConnectFactory.getConnection();var stmt = conn.prepareStatement(UPDATE_CLIENTE);) {
+
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(UPDATE_CLIENTE);) {
 
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getRg());
@@ -149,19 +135,16 @@ public class ClienteDao {
             stmt.setInt(14, cliente.getId());
 
             stmt.execute();
-            JOptionPane.showMessageDialog(null,
-                    "Alterado com Sucesso", "Sucesso total", JOptionPane.INFORMATION_MESSAGE);
-        }
-        catch (SQLException erro) {
-        	erro.printStackTrace();
+        } catch (Exception erro) {
+            erro.printStackTrace();
         }
     }
 
     public List<Cliente> filtrarPorNomes(String nome) {
-        try (var conn = ConnectFactory.getConnection();var stmt = conn.prepareStatement(SELECT_POR_NOME);){
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(SELECT_POR_NOME);) {
             var lista = new ArrayList<Cliente>();
-            
-            stmt.setString(1,nome);
+
+            stmt.setString(1, nome);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -186,12 +169,9 @@ public class ClienteDao {
                 lista.add(cliente);
             }
             return lista;
-        }
-        catch (SQLException e) {
-        	e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Deu erro", "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
-    
 }

@@ -4,91 +4,62 @@ import br.com.crud.jdbc.ConnectFactory;
 import br.com.crud.model.Fornecedor;
 import br.com.crud.model.Produto;
 
-import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProdutoDao {
 
-    private Connection con;
+    private static final String LISTAR_PRODUTOS = "select p.id, p.descricao, p.preco, p.qtd_estoque, f.nome from tb_produtos as p " +
+            "inner join tb_fornecedores as f on (p.for_id=f.id)";
+    private static final String CADASTRA_PRODUTOS = "insert into tb_produtos (descricao,preco,qtd_estoque,for_id) values (?,?,?,?)";
+    private static final String ALTERA_PRODUTOS = "update tb_produtos set descricao = ?, preco = ?, qtd_estoque=?, for_id =? where id = ?";
+    private static final String DELETA_PRODUTOS = "delete from tb_produtos where id = ?";
+    private static final String FILTRAR_PRODUTO_NOME = "select p.id, p.descricao, p.preco, p.qtd_estoque, f.nome from tb_produtos as p " +
+            "inner join tb_fornecedores as f on (p.for_id=f.id) where p.descricao like ?";
+    private static final String FILTRAR_NOME_CODIGO = "select p.id, p.descricao, p.preco, p.qtd_estoque, f.nome from tb_produtos as p " +
+            "inner join tb_fornecedores as f on (p.for_id=f.id) where p.id like ?";
+    private static final String ATUALIZA_ESTOQUE = "update tb_produtos set qtd_estoque=? where id=?";
+    private static final String ESTOQUE_ATUAL = "SELECT qtd_estoque from tb_produtos where id = ?";
 
-    public void ProdutoDao() {
-        this.con = new ConnectFactory().getConnection();
-    }
-
-    public void cadastrarProdutos(Produto obj) {
-        ProdutoDao();
-        try {
-            String sql = "insert into tb_produtos (descricao,preco,qtd_estoque,for_id) values (?,?,?,?)";
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, obj.getDescricao());
-            stmt.setDouble(2, obj.getPreco());
-            stmt.setInt(3, obj.getEstoque());
-            stmt.setInt(4, obj.getFornecedores().getId());
-
+    public void cadastrarProdutos(Produto produto) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(CADASTRA_PRODUTOS)) {
+            stmt.setString(1, produto.getDescricao());
+            stmt.setDouble(2, produto.getPreco());
+            stmt.setInt(3, produto.getEstoque());
+            stmt.setInt(4, produto.getFornecedores().getId());
             stmt.execute();
-            stmt.close();
 
-            JOptionPane.showMessageDialog(null, "Sucesso Total", "Cadastrado com Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro de Sql", "Erro",
-                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void alterarProdutos(Produto obj) {
-        try {
-            String sql = "update tb_produtos set descricao = ?, preco = ?, qtd_estoque=?, for_id =? where id = ?";
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, obj.getDescricao());
-            stmt.setDouble(2, obj.getPreco());
-            stmt.setInt(3, obj.getEstoque());
-            stmt.setInt(4, obj.getFornecedores().getId());
-            stmt.setInt(5, obj.getId());
-
+    public void alterarProdutos(Produto produto) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(ALTERA_PRODUTOS)) {
+            stmt.setString(1, produto.getDescricao());
+            stmt.setDouble(2, produto.getPreco());
+            stmt.setInt(3, produto.getEstoque());
+            stmt.setInt(4, produto.getFornecedores().getId());
+            stmt.setInt(5, produto.getId());
             stmt.execute();
-            stmt.close();
-
-            JOptionPane.showMessageDialog(null, "Sucesso Total", "Alterado com Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro de Sql", "Erro" + e,
-                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void excluirProdutos(Produto obj) {
-        try {
-            String sql = "delete from tb_produtos where id = ?";
-            ProdutoDao();
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            stmt.setInt(1, obj.getId());
-
+    public void excluirProdutos(Produto produto) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(DELETA_PRODUTOS)) {
+            stmt.setInt(1, produto.getId());
             stmt.execute();
-            stmt.close();
-
-            JOptionPane.showMessageDialog(null, "Sucesso total",
-                    "Excluído com Sucesso", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro" + e,
-                    "Errado", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     public List<Produto> listarProdutos() {
-        try {
-            List<Produto> lista = new ArrayList<>();
-            ProdutoDao();
-            String sql = "select p.id, p.descricao, p.preco, p.qtd_estoque, f.nome from tb_produtos as p " +
-                    "inner join tb_fornecedores as f on (p.for_id=f.id)";
-            PreparedStatement stmt = con.prepareStatement(sql);
+        List<Produto> lista = new ArrayList<>();
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(LISTAR_PRODUTOS)) {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -103,23 +74,17 @@ public class ProdutoDao {
                 produto.setFornecedores(fornecedor);
 
                 lista.add(produto);
-
             }
             return lista;
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro sql", "erro",
-                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public List<Produto> filtrarPorNomesProdutos(String nome) {
-        try {
-            List<Produto> lista = new ArrayList<>();
-            ProdutoDao();
-            String sql = "select p.id, p.descricao, p.preco, p.qtd_estoque, f.nome from tb_produtos as p " +
-                    "inner join tb_fornecedores as f on (p.for_id=f.id) where p.descricao like ?";
-            PreparedStatement stmt = con.prepareStatement(sql);
+        List<Produto> lista = new ArrayList<>();
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(FILTRAR_PRODUTO_NOME)) {
             stmt.setString(1, nome);
 
             ResultSet rs = stmt.executeQuery();
@@ -138,19 +103,14 @@ public class ProdutoDao {
                 lista.add(produto);
             }
             return lista;
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Deu erro",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public Produto filtrarPorNomesCodigo(int codigo) {
-        try {
-            ProdutoDao();
-            String sql = "select p.id, p.descricao, p.preco, p.qtd_estoque, f.nome from tb_produtos as p " +
-                    "inner join tb_fornecedores as f on (p.for_id=f.id) where p.id like ?";
-            PreparedStatement stmt = con.prepareStatement(sql);
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(FILTRAR_NOME_CODIGO)) {
             stmt.setInt(1, codigo);
 
             ResultSet rs = stmt.executeQuery();
@@ -168,48 +128,34 @@ public class ProdutoDao {
 
                 return produto;
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Deu erro no sql",
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     public void atualizaEstoque(int id, int qtdNova) {
-        try {
-            ProdutoDao();
-            String sql = "update tb_produtos set qtd_estoque=? where id=?";
-
-            PreparedStatement stmt = con.prepareStatement(sql);
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(ATUALIZA_ESTOQUE)) {
             stmt.setInt(1, qtdNova);
             stmt.setInt(2, id);
-
             stmt.execute();
-            stmt.close();
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
     public int estoqueAtual(int id) {
-        try {
-            ProdutoDao();
-            String sql = "SELECT qtd_estoque from tb_produtos where id = ?";
-            PreparedStatement stmt = con.prepareStatement(sql);
-
+        try(var conn = ConnectFactory.getConnection();var stmt = conn.prepareStatement(ESTOQUE_ATUAL)) {
             stmt.setInt(1, id);
 
             ResultSet rs = stmt.executeQuery();
-            int qtdAtual;
             if (rs.next()) {
-                qtdAtual = rs.getInt("qtd_estoque");
-                return qtdAtual;
+                return rs.getInt("qtd_estoque");
             }
         } catch (Exception e) {
             System.out.println(e);
         }
         return 0;
     }
-
 }
