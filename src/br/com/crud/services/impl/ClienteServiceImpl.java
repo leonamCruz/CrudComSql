@@ -25,17 +25,17 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public void cadastrarCliente(Cliente cliente) {
-        this.clienteDao.cadastrarCliente(cliente);
+    public boolean cadastrarCliente(Cliente cliente) {
+        return this.clienteDao.cadastrarCliente(cliente);
     }
 
     @Override
-    public void excluirClientes(Cliente cliente) {
-        this.clienteDao.excluirClientes(cliente);
+    public boolean excluirClientes(Cliente cliente) {
+        return this.clienteDao.excluirClientes(cliente);
     }
 
     @Override
-    public void alterarClientes(Cliente cliente) {
-        this.clienteDao.alterarClientes(cliente);
+    public boolean alterarClientes(Cliente cliente) {
+        return this.clienteDao.alterarClientes(cliente);
     }
 }

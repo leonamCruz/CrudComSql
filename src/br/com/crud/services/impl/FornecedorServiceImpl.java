@@ -11,8 +11,8 @@ public class FornecedorServiceImpl implements FornecedorService {
     private FornecedorDao fornecedorDao = new FornecedorDao();
 
     @Override
-    public void cadastrarFornecedores(Fornecedor fornecedor) {
-        this.fornecedorDao.cadastrarFornecedores(fornecedor);
+    public boolean cadastrarFornecedores(Fornecedor fornecedor) {
+       return this.fornecedorDao.cadastrarFornecedores(fornecedor);
     }
 
     @Override
@@ -21,13 +21,13 @@ public class FornecedorServiceImpl implements FornecedorService {
     }
 
     @Override
-    public void excluirFornecedor(Fornecedor fornecedor) {
-        this.fornecedorDao.excluirFornecedor(fornecedor);
+    public boolean excluirFornecedor(Fornecedor fornecedor) {
+        return this.fornecedorDao.excluirFornecedor(fornecedor);
     }
 
     @Override
-    public void alterarFornecedor(Fornecedor fornecedor) {
-        this.fornecedorDao.alterarFornecedor(fornecedor);
+    public boolean alterarFornecedor(Fornecedor fornecedor) {
+       return this.fornecedorDao.alterarFornecedor(fornecedor);
     }
 
     @Override

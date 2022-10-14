@@ -87,7 +87,11 @@ public class FormularioFuncionario {
                 } else if (funcionario.getNome().length() < 4) {
                     JOptionPane.showMessageDialog(null, "Nome muito pequeno", "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    service.cadastrarFuncionario(funcionario);
+                    boolean isRegistered = service.cadastrarFuncionario(funcionario);
+                    if (isRegistered) {
+                        JOptionPane.showMessageDialog(null, "Cadastrado com Sucesso", "Sucesso", JOptionPane.DEFAULT_OPTION);
+                    } else
+                        JOptionPane.showMessageDialog(null, "Houve algum problema...", "Entre em contato com o suporte", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -102,7 +106,11 @@ public class FormularioFuncionario {
                     "Você irá excluir este cidadão", JOptionPane.YES_NO_CANCEL_OPTION);
             if (opc == 0) {
                 funcionario.setId(Integer.parseInt(txtId.getText()));
-                service.excluirFuncionario(funcionario);
+                boolean itWasExcluded = service.excluirFuncionario(funcionario);
+                if (itWasExcluded) {
+                    JOptionPane.showMessageDialog(null, "Excluído com Sucesso", "Sucesso", JOptionPane.DEFAULT_OPTION);
+                } else
+                    JOptionPane.showMessageDialog(null, "Houve algum problema...", "Entre em contato com o suporte", JOptionPane.ERROR_MESSAGE);
             }
         });
         alterarButton.addActionListener(e -> {
@@ -124,7 +132,18 @@ public class FormularioFuncionario {
                 funcionario.setBairro(txtBairro.getText());
                 funcionario.setCidade(txtCidade.getText());
                 funcionario.setEstado(Objects.requireNonNull(opcEstado.getSelectedItem()).toString());
-                service.alterarFuncionario(funcionario);
+
+                if (funcionario.getNumero() < 0) {
+                    JOptionPane.showMessageDialog(null, "Número Negativo...", "Isso é absurdo", JOptionPane.ERROR_MESSAGE);
+
+                } else if (funcionario.getNome().length() < 4) {
+                    JOptionPane.showMessageDialog(null, "Nome muito pequeno", "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    boolean foiAlterado = service.alterarFuncionario(funcionario);
+                    if (foiAlterado) {
+                        JOptionPane.showMessageDialog(null, "Alterado com Sucesso", "Sucesso", JOptionPane.DEFAULT_OPTION);
+                    } else JOptionPane.showMessageDialog(null, "Houve algum problema...", "Entre em contato com o suporte", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         showTable.addMouseListener(new MouseAdapter() {
@@ -265,6 +284,7 @@ public class FormularioFuncionario {
         txtCidade.setText(showTable.getValueAt(linhaSelecionada, 15).toString());
         opcEstado.setSelectedItem(showTable.getValueAt(linhaSelecionada, 16));
     }
+
     private void listarPesquisaNomeFuncionario(String nome) {
         List<Funcionario> lista = service.filtrarPorNomes(nome);
         DefaultTableModel dados = (DefaultTableModel) showTable.getModel();
@@ -290,6 +310,7 @@ public class FormularioFuncionario {
                     funcionario.getEstado()
             });
     }
+
     void selecionaTelaFun(byte opc) {
         abas.setSelectedIndex(opc);
     }

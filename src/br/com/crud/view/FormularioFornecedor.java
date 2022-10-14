@@ -87,7 +87,12 @@ public class FormularioFornecedor {
                 } else if (fornecedor.getNome().length() < 4) {
                     JOptionPane.showMessageDialog(null, "Nome muito pequeno", "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    service.cadastrarFornecedores(fornecedor);
+                    boolean isRegistered = service.cadastrarFornecedores(fornecedor);
+                    if (isRegistered){
+                        JOptionPane.showMessageDialog(null,"Cadastrado com Sucesso","Sucesso",
+                                JOptionPane.DEFAULT_OPTION);
+                    } else JOptionPane.showMessageDialog(null,"Houve algum problema...","Contate o suporte",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

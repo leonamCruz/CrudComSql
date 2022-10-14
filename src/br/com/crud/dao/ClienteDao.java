@@ -51,7 +51,7 @@ public class ClienteDao {
         return null;
     }
 
-    public void cadastrarCliente(Cliente cliente) {
+    public boolean cadastrarCliente(Cliente cliente) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(INSERT_CLIENTE);) {
 
             stmt.setString(1, cliente.getNome());
@@ -69,8 +69,10 @@ public class ClienteDao {
             stmt.setString(13, cliente.getEstado());
 
             stmt.execute();
+            return true;
         } catch (Exception erro) {
             erro.printStackTrace();
+            return false;
         }
     }
 
@@ -106,16 +108,18 @@ public class ClienteDao {
         return new ArrayList<>();
     }
 
-    public void excluirClientes(Cliente cliente) {
+    public boolean excluirClientes(Cliente cliente) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(DELETE_POR_ID);) {
             stmt.setInt(1, cliente.getId());
             stmt.execute();
+            return true;
         } catch (Exception erro) {
             erro.printStackTrace();
+            return false;
         }
     }
 
-    public void alterarClientes(Cliente cliente) {
+    public boolean alterarClientes(Cliente cliente) {
 
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(UPDATE_CLIENTE);) {
 
@@ -135,11 +139,12 @@ public class ClienteDao {
             stmt.setInt(14, cliente.getId());
 
             stmt.execute();
+            return true;
         } catch (Exception erro) {
             erro.printStackTrace();
+            return false;
         }
     }
-
     public List<Cliente> filtrarPorNomes(String nome) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(SELECT_POR_NOME);) {
             var lista = new ArrayList<Cliente>();

@@ -3,9 +3,6 @@ package br.com.crud.dao;
 import br.com.crud.jdbc.ConnectFactory;
 import br.com.crud.model.Funcionario;
 
-import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,32 +20,32 @@ public class FuncionarioDao {
     private static final String FILTRAR_POR_NOME = "select * from tb_funcionarios where nome like ?";
 
 
-
-
-    public void cadastrarFuncionario(Funcionario obj) {
+    public boolean cadastrarFuncionario(Funcionario funcionario) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(CADASTRA_FUNCIONARIO)) {
 
-            stmt.setString(1, obj.getNome());
-            stmt.setString(2, obj.getRg());
-            stmt.setString(3, obj.getCpf());
-            stmt.setString(4, obj.getEmail());
-            stmt.setString(5, obj.getSenha());
-            stmt.setString(6, obj.getCargo());
-            stmt.setString(7, String.valueOf(obj.getNivelDeAcesso()));
-            stmt.setString(8, obj.getTelefone());
-            stmt.setString(9, obj.getCelular());
-            stmt.setString(10, obj.getCep());
-            stmt.setString(11, obj.getEndereco());
-            stmt.setInt(12, obj.getNumero());
-            stmt.setString(13, obj.getComplemento());
-            stmt.setString(14, obj.getBairro());
-            stmt.setString(15, obj.getCidade());
-            stmt.setString(16, obj.getEstado());
+            stmt.setString(1, funcionario.getNome());
+            stmt.setString(2, funcionario.getRg());
+            stmt.setString(3, funcionario.getCpf());
+            stmt.setString(4, funcionario.getEmail());
+            stmt.setString(5, funcionario.getSenha());
+            stmt.setString(6, funcionario.getCargo());
+            stmt.setString(7, String.valueOf(funcionario.getNivelDeAcesso()));
+            stmt.setString(8, funcionario.getTelefone());
+            stmt.setString(9, funcionario.getCelular());
+            stmt.setString(10, funcionario.getCep());
+            stmt.setString(11, funcionario.getEndereco());
+            stmt.setInt(12, funcionario.getNumero());
+            stmt.setString(13, funcionario.getComplemento());
+            stmt.setString(14, funcionario.getBairro());
+            stmt.setString(15, funcionario.getCidade());
+            stmt.setString(16, funcionario.getEstado());
 
             stmt.execute();
+            return true;
 
-        } catch (SQLException erro) {
-            System.out.println("erro" + erro);
+        } catch (Exception erro) {
+            erro.printStackTrace();
+            return false;
         }
     }
 
@@ -87,16 +84,17 @@ public class FuncionarioDao {
         return new ArrayList<>();
     }
 
-    public void excluirFuncionario(Funcionario funcionario) {
+    public boolean excluirFuncionario(Funcionario funcionario) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(EXCLUIR_FUNCIONARIO)) {
             stmt.setInt(1, funcionario.getId());
             stmt.execute();
+            return true;
         } catch (SQLException erro) {
             erro.printStackTrace();
+            return false;
         }
     }
-
-    public void alterarFuncionario(Funcionario funcionario) {
+    public boolean alterarFuncionario(Funcionario funcionario) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(ALTERAR_FUNCIONARIO)) {
 
             stmt.setString(1, funcionario.getNome());
@@ -115,13 +113,15 @@ public class FuncionarioDao {
             stmt.setInt(14, funcionario.getId());
 
             stmt.execute();
-        } catch (SQLException erro) {
+            return true;
+        } catch (Exception erro) {
             erro.printStackTrace();
+            return false;
         }
     }
 
     public List<Funcionario> filtrarPorNomes(String nome) {
-        try (var conn = ConnectFactory.getConnection();var stmt = conn.prepareStatement(FILTRAR_POR_NOME)){
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(FILTRAR_POR_NOME)) {
             List<Funcionario> lista = new ArrayList<>();
             stmt.setString(1, nome);
 

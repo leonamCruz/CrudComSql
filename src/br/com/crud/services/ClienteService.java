@@ -10,10 +10,10 @@ public interface ClienteService {
 	
 	List<Cliente> filtrarPorNomes(String nome);
 	
-	void cadastrarCliente(Cliente cliente);
+	boolean cadastrarCliente(Cliente cliente);
 	
-	void excluirClientes(Cliente cliente);
+	boolean excluirClientes(Cliente cliente);
 	
-	void alterarClientes(Cliente cliente);
+	boolean alterarClientes(Cliente cliente);
 
 }

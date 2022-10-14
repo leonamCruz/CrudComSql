@@ -10,13 +10,13 @@ import java.util.List;
 public class FornecedorDao {
     public static final String CADASTRA_FORNECEDOR = "insert into tb_fornecedores (nome,cnpj,email,telefone,celular,cep,endereco,numero,complemento,bairro,cidade,estado) values (?,?,?,?,?,?,?,?,?,?,?,?)";
     public static final String LISTAR_FORNECEDOR = "select * from tb_fornecedores";
-    public static final String DELETAR_FORNECEDOR = "delete from tb_fornecedores where id = ";
+    public static final String DELETAR_FORNECEDOR = "delete from tb_fornecedores where id";
     public static final String FILTRAR_FORNECEDOR_NOME = "select * from tb_fornecedores where nome like ?";
-    public static final String ALTERAR_FORNECEDOR = "update tb_fornecedores set nome = ?,\" +\n" +
-            "                    \"cnpj = ?,email = ?,telefone = ?,celular = ?,cep = ?,endereco = ?\" +\n" +
-            "                    \",numero = ?,complemento = ?,bairro = ?,cidade = ?,estado = ? where id = ?";
+    public static final String ALTERAR_FORNECEDOR = "update tb_fornecedores set nome = ?," +
+            "cnpj = ?,email = ?,telefone = ?,celular = ?,cep = ?,endereco = ?" +
+            ",numero = ?,complemento = ?,bairro = ?,cidade = ?,estado = ? where id = ?";
 
-    public void cadastrarFornecedores(Fornecedor fornecedor) {
+    public boolean cadastrarFornecedores(Fornecedor fornecedor) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(CADASTRA_FORNECEDOR)) {
             stmt.setString(1, fornecedor.getNome());
             stmt.setString(2, fornecedor.getCpnj());
@@ -32,9 +32,11 @@ public class FornecedorDao {
             stmt.setString(12, fornecedor.getEstado());
 
             stmt.execute();
+            return true;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -70,17 +72,18 @@ public class FornecedorDao {
         return new ArrayList<>();
     }
 
-    public void excluirFornecedor(Fornecedor fornecedor) {
+    public boolean excluirFornecedor(Fornecedor fornecedor) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(DELETAR_FORNECEDOR)) {
             stmt.setInt(1, fornecedor.getId());
 
             stmt.execute();
+            return true;
         } catch (Exception erro) {
             erro.printStackTrace();
+            return false;
         }
     }
-
-    public void alterarFornecedor(Fornecedor fornecedor) {
+    public boolean alterarFornecedor(Fornecedor fornecedor) {
         try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(ALTERAR_FORNECEDOR)) {
 
             stmt.setString(1, fornecedor.getNome());
@@ -98,20 +101,21 @@ public class FornecedorDao {
             stmt.setInt(13, fornecedor.getId());
 
             stmt.execute();
+            return true;
         } catch (Exception erro) {
             erro.printStackTrace();
+            return false;
         }
     }
-
     public List<Fornecedor> filtrarPorNomesFornecedores(String nome) {
         List<Fornecedor> lista = new ArrayList<>();
-        try(var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(FILTRAR_FORNECEDOR_NOME)) {
+        try (var conn = ConnectFactory.getConnection(); var stmt = conn.prepareStatement(FILTRAR_FORNECEDOR_NOME)) {
             stmt.setString(1, nome);
 
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Fornecedor fornecedor = new Fornecedor();
+                var fornecedor = new Fornecedor();
 
                 fornecedor.setId(rs.getInt("id"));
                 fornecedor.setNome(rs.getString("nome"));

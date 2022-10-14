@@ -14,8 +14,8 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     }
 
     @Override
-    public void cadastrarFuncionario(Funcionario funcionario) {
-        this.funcionarioDao.cadastrarFuncionario(funcionario);
+    public boolean cadastrarFuncionario(Funcionario funcionario) {
+        return this.funcionarioDao.cadastrarFuncionario(funcionario);
     }
 
     @Override
@@ -24,13 +24,13 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     }
 
     @Override
-    public void excluirFuncionario(Funcionario funcionario) {
-        this.funcionarioDao.excluirFuncionario(funcionario);
+    public boolean excluirFuncionario(Funcionario funcionario) {
+        return this.funcionarioDao.excluirFuncionario(funcionario);
     }
 
     @Override
-    public void alterarFuncionario(Funcionario funcionario) {
-        this.funcionarioDao.alterarFuncionario(funcionario);
+    public boolean alterarFuncionario(Funcionario funcionario) {
+        return this.funcionarioDao.alterarFuncionario(funcionario);
     }
 
     @Override

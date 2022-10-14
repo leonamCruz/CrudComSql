@@ -145,9 +145,13 @@ public class FormularioCliente {
                     JOptionPane.showMessageDialog(null, "Nome muito pequeno",
                             "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    service.cadastrarCliente(cliente);
+                    boolean isCadastred = service.cadastrarCliente(cliente);
+                    if(isCadastred){
+                        JOptionPane.showMessageDialog(null,"Cadastrado com Sucesso","Sucesso",
+                                JOptionPane.DEFAULT_OPTION);
+                    }else JOptionPane.showMessageDialog(null,"Houve Algum Problema...","Contate o Suporte",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-
             }
         });
         pesquisarButton.addActionListener(e -> listar());
@@ -163,8 +167,12 @@ public class FormularioCliente {
                     "Você irá excluir este cidadão", JOptionPane.YES_NO_CANCEL_OPTION);
             if (opc == 0) {
                 cliente.setId(Integer.parseInt(txtId.getText()));
-
-                service.excluirClientes(cliente);
+                boolean isExcluded = service.excluirClientes(cliente);
+                if(isExcluded){
+                    JOptionPane.showMessageDialog(null,"Excluido com sucesso","Sucesso",
+                            JOptionPane.DEFAULT_OPTION);
+                } else JOptionPane.showMessageDialog(null,"Houve Algum Problema...","Contate o Suporte",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
         alterarButton1.addActionListener(e -> {
@@ -194,13 +202,18 @@ public class FormularioCliente {
                     JOptionPane.showMessageDialog(null, "Nome muito pequeno",
                             "Pequeno de mais", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    service.alterarClientes(cliente);
+                    boolean isChanged = service.alterarClientes(cliente);
+                    if(isChanged){
+                        JOptionPane.showMessageDialog(null,"Alterado com Suceso","Sucesso",
+                                JOptionPane.DEFAULT_OPTION);
+                    } else JOptionPane.showMessageDialog(null,"Houve algum problema...","Contate o suporte",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
         limparButton.addActionListener(e -> {
-            txtId.setText("");
             cliente = new Cliente();
+            txtId.setText("");
             txtNome.setText("");
             txtRg.setText("");
             txtCpf.setText("");
