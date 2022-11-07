@@ -1,6 +1,5 @@
 package br.com.crud.view;
 
-import br.com.crud.dao.FornecedorDao;
 import br.com.crud.model.Fornecedor;
 import br.com.crud.services.impl.FornecedorServiceImpl;
 
@@ -8,7 +7,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import java.awt.event.*;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 

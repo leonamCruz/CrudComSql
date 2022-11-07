@@ -2,11 +2,7 @@ package br.com.crud.dao;
 
 import br.com.crud.jdbc.ConnectFactory;
 
-import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class LoginDao {
     private String nomeDoLogado;
